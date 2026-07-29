@@ -19,7 +19,7 @@ ESTRUTURA = {
 }
 
 class Spreadsheet():
-    def __init__(self, celulas:dict, linhas:dict, paginas:list):
+    def __init__(self, celulas:dict, linhas:dict, paginas:list=[]):
         self.celulas = celulas
         self.linhas = linhas
         self.paginas = paginas
@@ -59,6 +59,15 @@ class Spreadsheet():
 
     def get_linha(self, campo):
         return self.linhas[campo]
+
+    def carregar_paginas_automaticamente(self):
+        try:
+            if self._caminho != None:
+                self.paginas = pd.ExcelFile(self._caminho).sheet_names
+            else:
+                raise FileNotFoundError(f'Não é possível carregar as páginas automaticamente, pois o Spreadsheet {self.__repr__} não possui atributo caminho.')
+        except Exception as e:
+            raise Exception(e)
 
     def carregar_pagina(self, pagina):
         if pagina not in self.paginas and pagina > len(self.paginas)-1:

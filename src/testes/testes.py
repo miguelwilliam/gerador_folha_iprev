@@ -4,18 +4,18 @@ from dotenv import load_dotenv
 from src.my_classes.spreadsheet import Spreadsheet, ESTRUTURA
 from src.pdf.pdf_gen import gerarGuia
 
-def carregarPlanilha():
+def carregarPlanilhaComPaginas():
     load_dotenv()
 
     meuExcel = Spreadsheet(
         celulas=ESTRUTURA['CELULAS'], 
-        linhas=ESTRUTURA['LINHAS'], 
-        paginas=['ALIQUOTA', 'CLAUDETE', 'JUNIOR']
+        linhas=ESTRUTURA['LINHAS']
         )
 
     meuExcel.caminho = os.getenv('CAMINHO')
-    df = meuExcel.carregar_pagina(1) 
-    return meuExcel, df
+    meuExcel.carregar_paginas_automaticamente()
+
+    print(meuExcel.paginas)
 
 
 # Bloco de teste de leitura do excel:
