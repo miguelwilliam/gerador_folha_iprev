@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog, messagebox
-import pandas as pd
 from pathlib import Path
 
 from src.utils.paths import resource_path
@@ -230,8 +229,9 @@ class ExcelToPDFGUI:
 
     def pegar_competencias(self, filename, sheetname):
         #Chamar a atualização de competencias   
-        meuExcel = Spreadsheet(ESTRUTURA['CELULAS'], ESTRUTURA['LINHAS'], paginas=pd.ExcelFile(filename).sheet_names)
+        meuExcel = Spreadsheet(ESTRUTURA['CELULAS'], ESTRUTURA['LINHAS'])
         meuExcel.caminho = filename
+        meuExcel.carregar_paginas_automaticamente()
 
         df = meuExcel.carregar_pagina(sheetname)
 
@@ -255,14 +255,16 @@ class ExcelToPDFGUI:
 
         self.excel_path.set(filename)
 
-        xls = pd.ExcelFile(filename)
+        xls = Spreadsheet(ESTRUTURA['CELULAS'], ESTRUTURA['LINHAS'])
+        xls.caminho = filename
+        xls.carregar_paginas_automaticamente()
 
-        self.combo_sheet["values"] = xls.sheet_names
+        self.combo_sheet["values"] = xls.paginas
 
-        if xls.sheet_names:
+        if len(xls.paginas) > 0:
             self.combo_sheet.current(0)
 
-        competencias = self.pegar_competencias(filename = filename, sheetname = xls.sheet_names[0])
+        competencias = self.pegar_competencias(filename = filename, sheetname = xls.paginas[0])
 
         self.atualizar_competencias(competencias)
 
@@ -333,8 +335,9 @@ class ExcelToPDFGUI:
         # Coloque aqui sua lógica de conversão Excel -> PDF
         # ==================================================
         
-        meuExcel = Spreadsheet(ESTRUTURA['CELULAS'], ESTRUTURA['LINHAS'], paginas=pd.ExcelFile(excel).sheet_names)
+        meuExcel = Spreadsheet(ESTRUTURA['CELULAS'], ESTRUTURA['LINHAS'])
         meuExcel.caminho = excel
+        meuExcel.carregar_paginas_automaticamente()
         df = meuExcel.carregar_pagina(sheet)
         dados = {}
 

@@ -65,7 +65,7 @@ class Spreadsheet():
             if self._caminho != None:
                 self.paginas = pd.ExcelFile(self._caminho).sheet_names
             else:
-                raise FileNotFoundError(f'Não é possível carregar as páginas automaticamente, pois o Spreadsheet {self.__repr__} não possui atributo caminho.')
+                raise ValueError(f'Não é possível carregar as páginas automaticamente, pois o Spreadsheet não possui atributo caminho.')
         except Exception as e:
             raise Exception(e)
 
