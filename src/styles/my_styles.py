@@ -8,7 +8,7 @@ estiloParagrafo1 = ParagraphStyle(
     "Compacto",
     parent=styles["BodyText"],
     fontName="Helvetica",
-    fontSize=7.5,
+    fontSize=8,
     leading=9,          # espaçamento entre linhas
     wordWrap="LTR",     # quebra de linha normal
 )
@@ -17,23 +17,24 @@ estiloParagrafo2 = ParagraphStyle(
     "Compacto",
     parent=styles["BodyText"],
     fontName="Helvetica-Bold",
-    fontSize=7.5,
+    fontSize=8,
     leading=9,          # espaçamento entre linhas
     wordWrap="LTR",     # quebra de linha normal
-    alignment=TA_CENTER
 )
 
-estiloParagrafo3 = ParagraphStyle(
-    "Compacto",
-    parent=styles["BodyText"],
-    fontName="Helvetica-Bold",
-    fontSize=10,
-    leading=9,          # espaçamento entre linhas
-    wordWrap="LTR",     # quebra de linha normal
-    alignment=TA_CENTER
-)
+estiloTabela1 = [
+    # BORDAS
+    ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
 
-estiloTabela = [
+    # ALINHAMENTO
+    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+
+    # SPAN
+    ('SPAN', (0, 0), (-1, 0)),
+    ('SPAN', (0, -1), (-1, -1)),
+]
+
+estiloTabela2 = [
     ('FONTSIZE', (0, 0), (-1, -1), 7.5),
     ('FONTNAME', (0, 0), (0, 2), 'Helvetica-Bold'),
     #('GRID', (0, 0), (-1, -1), 1, colors.black),

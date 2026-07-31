@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 from src.my_classes.spreadsheet import Spreadsheet, ESTRUTURA
-from src.pdf.pdf_gen import gerarGuia
+from src.pdf.pdf_gen import gerarFolha
 
 def carregarPlanilhaComPaginas():
     load_dotenv()
@@ -16,35 +16,12 @@ def carregarPlanilhaComPaginas():
     meuExcel.carregar_paginas_automaticamente()
 
     print(meuExcel.paginas)
+    return meuExcel
 
-
-# Bloco de teste de leitura do excel:
-def teste_leitura(meuExcel, df):
-    for celula, pos in meuExcel.celulas.items():
-        pos_pandas = Spreadsheet.excel_para_pandas(pos)
-
-        # Para extrair o nome da célula
-        if celula == 'NOME':
-            dados = str(df.iloc[pos_pandas[0], pos_pandas[1]]).split(' - ')
-            print(f'NOME, {pos_pandas} > {dados[0]}')
-            print(f'DATA DE ADMISSÃO, {pos_pandas} > {dados[1]}')
-            continue
-
-        print(f'{celula}, {pos_pandas} > {df.iloc[pos_pandas[0], pos_pandas[1]]}')
-
-    for col in range(len(df.columns)):
-        if col == 0: continue
-
-        print('==================')
-        for dado, linha in meuExcel.linhas.items():
-            pos_pandas = [linha-1, col]
-            
-            # print(f'{dado}, ({linha-1}, {col}) > {df.iloc[pos_pandas[0], pos_pandas[1]]}')
-            print(f'{dado} > {df.iloc[pos_pandas[0], pos_pandas[1]]}')
 
 # Teste com formatação de dados no python
 
-def teste_gerar_documento(meuExcel, df):
+def teste_gerar_folha(meuExcel, df):
     dados = {}
 
     for celula, pos in meuExcel.celulas.items():
@@ -73,7 +50,4 @@ def teste_gerar_documento(meuExcel, df):
 
     for chave, valor in dados.items(): print(f'{chave} > {valor}')
 
-    
-    #sucesso = gerarGuia(dados, r'./relatorio_teste.pdf')
-    #print('SUCESSO:', sucesso)
-
+    gerarFolha(dados, 'relatorio.pdf', ['BC'])

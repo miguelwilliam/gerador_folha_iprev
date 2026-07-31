@@ -7,6 +7,7 @@ ESTRUTURA = {
         {
             'NOME': 'A1',
             'ORGAO': 'B3',
+            'CESSAO': 'B2'
         },
 
         'LINHAS': 
