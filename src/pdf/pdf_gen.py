@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from src.my_classes.spreadsheet import Spreadsheet
 from src.styles import my_styles
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, PageBreak, HRFlowable
+from reportlab.lib.units import cm
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Image, Spacer
 
 
 
@@ -34,6 +34,21 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC']):
             # conta_corrente = '9197-9'
 
         # GERAR HEADER
+        logo_path = 'static/img/icon.png'
+        header_img = Image(logo_path, 2*cm, 2*cm)
+
+        dados_header = [
+            [header_img, Paragraph('INST. PREVIDÊNCIA DE SÃO GONÇALO DO AMARANTE', my_styles.estiloParagrafo2), ''],
+            ['', Paragraph('Extrato das Remunerações e Contribuições', my_styles.estiloParagrafo3), f'Data: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}']
+        ]
+
+        header = Table(dados_header, colWidths=[95, 285, 190])
+        header.setStyle(TableStyle(my_styles.estiloHeader))
+
+        story.append(header)
+        story.append(Spacer(1, 0.5*cm))
+
+        # GERAR TABELA DO SERVIDOR
         dados_servidor = [
             [Paragraph(f'Nome: {dados['NOME']}', my_styles.estiloParagrafo1), '', ''],
             [Paragraph(f'Fundo: {identificador}', my_styles.estiloParagrafo1), Paragraph(f'Admissão: {dados['ADMISSAO']}', my_styles.estiloParagrafo1), Paragraph(f'Data de cessão: {dados['CESSAO'].strftime("%d/%m/%Y")}', my_styles.estiloParagrafo1)],
@@ -73,7 +88,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC']):
 
         # ADICIONAR VALORES DE SOMA NO FINAL DA TABELA
 
-        pdf = SimpleDocTemplate(str(caminho_pdf), pagesize=A4)
+        pdf = SimpleDocTemplate(str(caminho_pdf), pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72)
 
         pdf.build(story)
 

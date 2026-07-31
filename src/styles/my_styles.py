@@ -16,15 +16,42 @@ estiloParagrafo1 = ParagraphStyle(
 estiloParagrafo2 = ParagraphStyle(
     "Compacto",
     parent=styles["BodyText"],
-    fontName="Helvetica-Bold",
-    fontSize=8,
+    fontName="Helvetica",
+    fontSize=9,
     leading=9,          # espaçamento entre linhas
     wordWrap="LTR",     # quebra de linha normal
 )
 
+estiloParagrafo3 = ParagraphStyle(
+    "Compacto",
+    parent=styles["BodyText"],
+    fontName="Helvetica-Bold",
+    fontSize=9,
+    leading=9,          # espaçamento entre linhas
+    wordWrap="LTR",     # quebra de linha normal
+)
+
+estiloHeader = [
+    # TEXTO
+    ('FONTSIZE', (-1, -1), (-1, -1), estiloParagrafo2.fontSize),
+
+    # BORDAS
+    #('GRID', (0, 0), (-1, -1), 1, colors.black), # Para debug
+    ('LINEBELOW', (1, -1), (-1, -1), 2, colors.HexColor('#135BA8')),
+
+    # ALINHAMENTO
+    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    #('VALIGN', (1, 0), (1, 0), 'TOP'),
+    ('ALIGN', (-1, -1), (-1, -1), 'RIGHT'),
+
+    # SPAN
+    ('SPAN', (0, 0), (0, 1)),
+    ('SPAN', (1, 0), (-1, 0))
+]
+
 estiloTabela1 = [
     # BORDAS
-    ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+    ('GRID', (0, 0), (-1, -1), 1, colors.lightgrey),
 
     # ALINHAMENTO
     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
