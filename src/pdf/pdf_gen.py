@@ -1,6 +1,6 @@
 from datetime import datetime
 
-
+from src.utils.paths import resource_path
 from src.styles import my_styles
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
@@ -43,7 +43,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
         )
 
         # GERAR HEADER
-        logo_path = 'static/img/icon.png'
+        logo_path = resource_path("static", "img", "icon.png")
         header_img = Image(logo_path, 2*cm, 2*cm)
 
         dados_header = [
@@ -86,8 +86,8 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
                 continue
 
             if dados[i]['COMPETENCIA'] in competencias_dec_terc and chave_decimo_terceiro != None:
-                remun_13 = (dados[chave_decimo_terceiro]['BASE_CALC'])/len(competencias_dec_terc)
-                contrib_13 = (dados[chave_decimo_terceiro]['IPREV'])/len(competencias_dec_terc)
+                remun_13 = (dados[chave_decimo_terceiro]['BASE_CALC'])/len([item for item in competencias_dec_terc if item not in exclude_competencias])
+                contrib_13 = (dados[chave_decimo_terceiro]['IPREV'])/len([item for item in competencias_dec_terc if item not in exclude_competencias])
             else:
                 remun_13, contrib_13 = 0, 0
 
