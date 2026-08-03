@@ -1,4 +1,5 @@
 from datetime import datetime
+import traceback
 
 from src.styles import my_styles
 from reportlab.lib.pagesizes import A4
@@ -36,7 +37,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
         chave_decimo_terceiro = next(
             (
                 k for k, v in dados.items()
-                if isinstance(v, dict) and '13' in v['COMPETENCIA']
+                if isinstance(v, dict) and '13' in str(v['COMPETENCIA'])
             ),
             None
         )
@@ -84,7 +85,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
             if dados[i]['COMPETENCIA'] in exclude_competencias or i == chave_decimo_terceiro: 
                 continue
 
-            if dados[i]['COMPETENCIA'] in competencias_dec_terc:
+            if dados[i]['COMPETENCIA'] in competencias_dec_terc and chave_decimo_terceiro != None:
                 remun_13 = (dados[chave_decimo_terceiro]['BASE_CALC'])/len(competencias_dec_terc)
                 contrib_13 = (dados[chave_decimo_terceiro]['IPREV'])/len(competencias_dec_terc)
             else:
@@ -130,7 +131,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
 
         # ADICIONAR VALORES DE SOMA NO FINAL DA TABELA
 
-        pdf = SimpleDocTemplate(str(caminho_pdf), pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72)
+        pdf = SimpleDocTemplate(str(caminho_pdf), pagesize=A4, rightMargin=72, leftMargin=72, topMargin=36)
 
         pdf.build(story)
 
@@ -138,5 +139,6 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
         return True
     
     except Exception as e:
-        print(f'ERRO EM GERAR O RELATÓRIO:\n{e}')
+        #print(f'ERRO EM GERAR O RELATÓRIO:\n{e}')
+        traceback.print_exc()
         return False
