@@ -10,7 +10,7 @@ from src.my_classes.spreadsheet import Spreadsheet, ESTRUTURA
 class ExcelToPDFGUI:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Gerador de GPP")
+        self.root.title("Gerador de Extrato das Remunerações e Contribuições")
         self.root.geometry("550x500")
         self.root.resizable(False, False)
         self.root.iconbitmap(resource_path("static", "img", "icon.ico"))

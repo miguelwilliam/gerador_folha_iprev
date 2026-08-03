@@ -127,10 +127,6 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
         story.append(tabela_extrato)
         
 
-        # ADICIONAR OS VALORES PARA CADA FUNCIONÁRIO
-
-        # ADICIONAR VALORES DE SOMA NO FINAL DA TABELA
-
         pdf = SimpleDocTemplate(str(caminho_pdf), pagesize=A4, rightMargin=72, leftMargin=72, topMargin=36)
 
         pdf.build(story)
