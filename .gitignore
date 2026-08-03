@@ -2,8 +2,7 @@
 venv/
 
 .env
-!static/img/icon.icon
-!static/img/icon.png
+!static/img/
 
 *.pdf
 
