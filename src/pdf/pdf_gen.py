@@ -1,5 +1,5 @@
 from datetime import datetime
-import traceback
+
 
 from src.styles import my_styles
 from reportlab.lib.pagesizes import A4
@@ -139,6 +139,5 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
         return True
     
     except Exception as e:
-        #print(f'ERRO EM GERAR O RELATÓRIO:\n{e}')
-        traceback.print_exc()
+        print(f'ERRO EM GERAR O RELATÓRIO:\n{e}')
         return False
