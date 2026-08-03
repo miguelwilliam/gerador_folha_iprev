@@ -4,19 +4,19 @@ from tkinter import filedialog, messagebox
 from pathlib import Path
 
 from src.utils.paths import resource_path
-from src.pdf.pdf_gen import gerarGuia
+from src.pdf.pdf_gen import gerarFolha
 from src.my_classes.spreadsheet import Spreadsheet, ESTRUTURA
 
 class ExcelToPDFGUI:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Gerador de GPP")
-        self.root.geometry("550x370")
+        self.root.geometry("550x500")
         self.root.resizable(False, False)
         self.root.iconbitmap(resource_path("static", "img", "icon.ico"))
 
         self.competencias = {}
-        self.multa_vars = {}
+        self.decimo_vars = {}
 
         self.create_widgets()
 
@@ -72,13 +72,13 @@ class ExcelToPDFGUI:
             sticky="nsew"
         )
 
-        # Canvas
+        # Canvas Competencias
         self.canvas_comp = tk.Canvas(
             self.frame_competencias,
             height=100
         )
 
-        # Barra de rolagem
+        # Barra de rolagem das Competências
         self.scrollbar_comp = tk.Scrollbar(
             self.frame_competencias,
             orient="vertical",
@@ -90,25 +90,25 @@ class ExcelToPDFGUI:
         )
 
         # Frame que conterá os checkboxes
-        self.frame_checks = tk.Frame(self.canvas_comp)
-        self.frame_checks.grid_columnconfigure(0, weight=1)
+        self.frame_comp_checks = tk.Frame(self.canvas_comp)
+        self.frame_comp_checks.grid_columnconfigure(0, weight=1)
 
         self.canvas_comp.create_window(
             (0, 0),
-            window=self.frame_checks,
+            window=self.frame_comp_checks,
             anchor="nw"
         )
 
         # Atualiza a área rolável sempre que o conteúdo muda
-        self.frame_checks.bind(
+        self.frame_comp_checks.bind(
             "<Configure>",
             lambda e: self.canvas_comp.configure(
                 scrollregion=self.canvas_comp.bbox("all")
             )
         )
 
-        self.frame_checks.bind("<Enter>", self._bind_mousewheel)
-        self.frame_checks.bind("<Leave>", self._unbind_mousewheel)
+        self.frame_comp_checks.bind("<Enter>", self._bind_mousewheel)
+        self.frame_comp_checks.bind("<Leave>", self._unbind_mousewheel)
 
         self.canvas_comp.bind("<Enter>", self._bind_mousewheel)
         self.canvas_comp.bind("<Leave>", self._unbind_mousewheel)
@@ -124,9 +124,78 @@ class ExcelToPDFGUI:
             fill="y"
         )
 
+        
+        # Frame do 13º
+        self.frame_decimo = tk.LabelFrame(
+            self.root,
+            text="Meses para rateio do 13º"
+        )
+
+        self.frame_decimo.grid(
+            row=3,
+            column=0,
+            columnspan=3,
+            padx=10,
+            pady=5,
+            sticky="ew"
+        )
+
+        # Canvas do Décimo
+        self.canvas_decimo = tk.Canvas(
+            self.frame_decimo,
+            height=100
+        )
+
+        # Barra de rolagem dos décimos
+        self.scrollbar_decimo = tk.Scrollbar(
+            self.frame_decimo,
+            orient="vertical",
+            command=self.canvas_decimo.yview
+        )
+
+        self.canvas_decimo.configure(
+            yscrollcommand=self.scrollbar_decimo.set
+        )
+
+        # Frame que conterá os checkboxes
+        self.frame_decimo_checks = tk.Frame(self.canvas_decimo)
+        self.frame_decimo_checks.grid_columnconfigure(0, weight=1)
+
+        self.canvas_decimo.create_window(
+            (0, 0),
+            window=self.frame_decimo_checks,
+            anchor="nw"
+        )
+
+        # Atualiza a área rolável sempre que o conteúdo muda
+        self.frame_decimo_checks.bind(
+            "<Configure>",
+            lambda e: self.canvas_decimo.configure(
+                scrollregion=self.canvas_decimo.bbox("all")
+            )
+        )
+
+        self.frame_decimo_checks.bind("<Enter>", self._bind_mousewheel)
+        self.frame_decimo_checks.bind("<Leave>", self._unbind_mousewheel)
+
+        self.canvas_decimo.bind("<Enter>", self._bind_mousewheel)
+        self.canvas_decimo.bind("<Leave>", self._unbind_mousewheel)
+
+        self.canvas_decimo.pack(
+            side="left",
+            fill="both",
+            expand=True
+        )
+
+        self.scrollbar_decimo.pack(
+            side="right",
+            fill="y"
+        )
+
+
         # Nome do PDF
         tk.Label(self.root, text="Nome do PDF:").grid(
-            row=3, column=0, padx=10, pady=10, sticky="w"
+            row=4, column=0, padx=10, pady=10, sticky="w"
         )
 
         self.pdf_name = tk.StringVar()
@@ -135,11 +204,11 @@ class ExcelToPDFGUI:
             self.root,
             textvariable=self.pdf_name,
             width=30
-        ).grid(row=3, column=1, sticky="w")
+        ).grid(row=4, column=1, sticky="w")
 
         # Pasta de saída
         tk.Label(self.root, text="Pasta de saída:").grid(
-            row=4, column=0, padx=10, pady=10, sticky="w"
+            row=5, column=0, padx=10, pady=10, sticky="w"
         )
 
         self.output_path = tk.StringVar()
@@ -148,13 +217,13 @@ class ExcelToPDFGUI:
             self.root,
             textvariable=self.output_path,
             width=55
-        ).grid(row=4, column=1)
+        ).grid(row=5, column=1)
 
         tk.Button(
             self.root,
             text="Selecionar",
             command=self.select_output
-        ).grid(row=4, column=2, padx=5)
+        ).grid(row=5, column=2, padx=5)
 
         # Botão principal
         tk.Button(
@@ -162,44 +231,30 @@ class ExcelToPDFGUI:
             text="Converter",
             width=20,
             command=self.convert
-        ).grid(row=5, column=1, pady=25)
+        ).grid(row=6, column=1, pady=25)
 
     def atualizar_competencias(self, competencias):
         # Remove os checkboxes antigos
-        for widget in self.frame_checks.winfo_children():
+        for widget in self.frame_comp_checks.winfo_children():
             widget.destroy()
 
         self.competencias.clear()
 
         tk.Label(
-            self.frame_checks,
+            self.frame_comp_checks,
             text="Competência",
             font=("Segoe UI", 9, "bold")
         ).grid(row=0, column=0, sticky="w", padx=5)
-
-        tk.Label(
-            self.frame_checks,
-            text="Multa (R$)",
-            font=("Segoe UI", 9, "bold")
-        ).grid(row=0, column=1, padx=5)
 
         # Cria novos checkboxes
         for i, competencia in enumerate(competencias):
 
             check_var = tk.BooleanVar(value=True)
-            multa_var = tk.StringVar()
 
             chk = tk.Checkbutton(
-                self.frame_checks,
+                self.frame_comp_checks,
                 text=competencia,
                 variable=check_var
-            )
-
-            entry = tk.Entry(
-                self.frame_checks,
-                textvariable=multa_var,
-                width=10,
-                justify="right"
             )
 
             chk.grid(
@@ -210,21 +265,44 @@ class ExcelToPDFGUI:
                 pady=2
             )
 
-            entry.grid(
-                row=i+1,
-                column=1,
-                padx=5
-            )
-
             self.competencias[competencia] = {
                 "checked": check_var,
-                "multa": multa_var
             }
 
-        self.frame_checks.update_idletasks()
+        self.frame_comp_checks.update_idletasks()
 
         self.canvas_comp.configure(
             scrollregion=self.canvas_comp.bbox("all")
+        )
+
+    def atualizar_decimo(self, competencias):
+        for widget in self.frame_decimo_checks.winfo_children():
+            widget.destroy()
+
+        self.decimo_vars.clear()
+
+        for i, competencia in enumerate(competencias):
+
+            var = tk.BooleanVar(value=False)
+
+            tk.Checkbutton(
+                self.frame_decimo_checks,
+                text=competencia,
+                variable=var
+            ).grid(
+                row=i,
+                column=0,
+                sticky="w",
+                padx=5,
+                pady=2
+            )
+
+            self.decimo_vars[competencia] = var
+
+        self.frame_decimo_checks.update_idletasks()
+
+        self.canvas_decimo.configure(
+            scrollregion=self.canvas_decimo.bbox("all")
         )
 
     def pegar_competencias(self, filename, sheetname):
@@ -267,6 +345,7 @@ class ExcelToPDFGUI:
         competencias = self.pegar_competencias(filename = filename, sheetname = xls.paginas[0])
 
         self.atualizar_competencias(competencias)
+        self.atualizar_decimo(competencias)
 
     def on_sheet_changed(self, event):
         competencias = self.pegar_competencias(
@@ -275,6 +354,7 @@ class ExcelToPDFGUI:
         )
 
         self.atualizar_competencias(competencias)
+        self.atualizar_decimo([item for item in competencias if item not in ['13', '13º', 'BC']])
 
     def select_output(self):
         folder = filedialog.askdirectory(
@@ -298,20 +378,17 @@ class ExcelToPDFGUI:
 
         competencias = []
 
-        multas = {}
+        competencias_dec_terc = [
+            competencia
+            for competencia, var in self.decimo_vars.items()
+            if var.get()
+        ]
 
         for competencia, dados in self.competencias.items():
 
             if dados["checked"].get():
 
                 competencias.append(competencia)
-
-                texto = dados["multa"].get().strip()
-
-                if texto:
-                    multas[competencia] = float(
-                        texto.replace(",", ".")
-                    )
 
         if not excel:
             messagebox.showerror("Erro", "Selecione um arquivo Excel.")
@@ -365,12 +442,10 @@ class ExcelToPDFGUI:
                 # print(f'{dado} > {df.iloc[pos_pandas[0], pos_pandas[1]]}')
                 dados[str(col)][dado] = df.iloc[pos_pandas[0], pos_pandas[1]]
 
-            if dados[str(col)]['COMPETENCIA'] in multas.keys():
-                dados[str(col)]['MULTA'] = multas[dados[str(col)]['COMPETENCIA']]
 
         for chave, valor in dados.items(): print(f'{chave} > {valor}')
 
-        sucesso = gerarGuia(dados, pdf_path, competencias_nao_selecionadas)
+        sucesso = gerarFolha(dados, pdf_path, competencias_nao_selecionadas, competencias_dec_terc)
         print('SUCESSO:',sucesso)
 
         if sucesso:
@@ -390,16 +465,23 @@ PDF:
             messagebox.showinfo("Erro", "Um erro aconteceu na geração do seu relatório. Cheque as suas configurações antes de tentar novamente.")
 
     def _on_mousewheel(self, event):
-        self.canvas_comp.yview_scroll(
-            int(-event.delta / 120),
-            "units"
-        )
+        if self._active_canvas is not None:
+            self._active_canvas.yview_scroll(
+                int(-event.delta / 120),
+                "units"
+            )
 
     def _bind_mousewheel(self, event):
-        self.canvas_comp.bind_all("<MouseWheel>", self._on_mousewheel)
+        self._active_canvas = event.widget
+
+        while not isinstance(self._active_canvas, tk.Canvas):
+            self._active_canvas = self._active_canvas.master
+
+        self.root.bind_all("<MouseWheel>", self._on_mousewheel)
 
     def _unbind_mousewheel(self, event):
-        self.canvas_comp.unbind_all("<MouseWheel>")
+        self.root.unbind_all("<MouseWheel>")
+        self._active_canvas = None
 
     def run(self):
         self.root.mainloop()

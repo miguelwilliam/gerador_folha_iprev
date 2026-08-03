@@ -1,12 +1,9 @@
-#from src.interface import interface
-from src.testes import testes
+from src.interface import interface
 
 def main():
     print('Rodando código principal...')
-    meuExcel = testes.carregarPlanilhaComPaginas()
-    df = meuExcel.carregar_pagina(meuExcel.paginas[-1])
-    testes.teste_gerar_folha(meuExcel, df)
-
+    app = interface.ExcelToPDFGUI()
+    app.run()
 
 
 if __name__ == "__main__":
