@@ -68,10 +68,13 @@ estiloTabelaExtrato = [
     ('FONTSIZE', (0, 0), (-1, -1), estiloParagrafo1.fontSize),
 
     # BORDAS
-    ('LINEABOVE', (0, 0), (-1, 0), 1, colors.gray),
-    ('LINEBELOW', (0, 0), (-1, 0), 1, colors.gray),
+    ('LINEABOVE', (0, 0), (-1, 0), 1, colors.HexColor('#6fb3fc')),
+    ('LINEBELOW', (0, 0), (-1, 0), 1, colors.HexColor('#6fb3fc')),
 
     # ALINHAMENTO
     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
+
+    # BACKGROUND
+    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e8f2fc'))
 ]

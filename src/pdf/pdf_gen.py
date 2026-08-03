@@ -7,7 +7,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 
 
 
-def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC']):
+def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], competencias_dec_terc:list=['Jun', 'Dez']):
     """
     Gera o documento Guia da Previdência Própria com base na entrada de um dicionário de dados, na seguinte formatação:
     
@@ -24,7 +24,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC']):
     try:
         story = []
 
-        # GERANDO IDENTIFICADOR (FC/FR)
+        # GERANDO IDENTIFICADOR (FC/FR) E VENDO SE EXISTE UMA ENTRADA DE DÉCIMO TERCEIRO
         admissao = datetime.strptime(dados['ADMISSAO'], '%d/%m/%Y')
         if admissao < datetime.strptime('31/12/2012', '%d/%m/%Y') or admissao > datetime.strptime('01/01/2025', '%d/%m/%Y'):
             identificador = 'FR - IPREV'
@@ -32,6 +32,14 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC']):
         else:
             identificador = 'FC - IPREV'
             # conta_corrente = '9197-9'
+
+        chave_decimo_terceiro = next(
+            (
+                k for k, v in dados.items()
+                if isinstance(v, dict) and '13' in v['COMPETENCIA']
+            ),
+            None
+        )
 
         # GERAR HEADER
         logo_path = 'static/img/icon.png'
@@ -68,19 +76,20 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC']):
         ]
 
         linha_total = ['TOTAL', 0, 0, 0, 0, 0, 0]
+        
         for i in range(len(dados)-4):
             i = str(i+1)
 
             # PULAR PÁGINAS QUE EU EXCLUIR:
-            if dados[i]['COMPETENCIA'] in exclude_competencias: 
+            if dados[i]['COMPETENCIA'] in exclude_competencias or i == chave_decimo_terceiro: 
                 continue
 
-            if '13' in dados[i]['COMPETENCIA']:
-                remun_13 = dados[i]['BASE_CALC']
-                contrib_13 = dados[i]['IPREV']
+            if dados[i]['COMPETENCIA'] in competencias_dec_terc:
+                remun_13 = (dados[chave_decimo_terceiro]['BASE_CALC'])/len(competencias_dec_terc)
+                contrib_13 = (dados[chave_decimo_terceiro]['IPREV'])/len(competencias_dec_terc)
             else:
                 remun_13, contrib_13 = 0, 0
-                
+
 
             linha = [
                 dados[i]['COMPETENCIA'],
