@@ -74,7 +74,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
 
         # GERAR TABELA EXTRATO
         dados_extrato = [
-            ['Competência', 'Valor\nRemuneração', 'Valor\nContribuição', 'Valor\nRemuneração 13º', 'Valor\nContribuição 13º', 'Valor\nPatronal',  'TOTAL\nRemuneração + 13º']
+            ['Competência', 'Valor\nRemuneração', 'Valor\nContribuição', 'Valor\nPatronal', 'Valor\nRemuneração 13º', 'Valor\nContribuição 13º',  'TOTAL\nRemuneração + 13º']
         ]
 
         linha_total = ['TOTAL', 0, 0, 0, 0, 0, 0]
@@ -98,30 +98,21 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
                 remun_13, contrib_13, patronal_13 = 0, 0, 0
 
 
-            '''linha = [
-                dados[i]['COMPETENCIA'],
-                f'{float(dados[i]['BASE_CALC']):,.2f}',
-                f'{float(dados[i]['IPREV']):,.2f}',
-                f'{float(remun_13):,.2f}',
-                f'{float(contrib_13):,.2f}',
-                f'{float(dados[i]['PATRONAL'] + patronal_13):,.2f}',
-                f'{float(dados[i]['BASE_CALC'] + remun_13):,.2f}',
-            ]'''
             linha = [
                 dados[i]['COMPETENCIA'],
                 locale.currency(dados[i]['BASE_CALC'], grouping=True, symbol=False),
                 locale.currency(dados[i]['IPREV'], grouping=True, symbol=False),
+                locale.currency(dados[i]['PATRONAL'] + patronal_13, grouping=True, symbol=False),
                 locale.currency(remun_13, grouping=True, symbol=False),
                 locale.currency(contrib_13, grouping=True, symbol=False),
-                locale.currency(dados[i]['PATRONAL'] + patronal_13, grouping=True, symbol=False),
                 locale.currency(dados[i]['BASE_CALC'] + remun_13, grouping=True, symbol=False),
             ]
 
             linha_total[1] += dados[i]['BASE_CALC']
             linha_total[2] += dados[i]['IPREV']
-            linha_total[3] += remun_13
-            linha_total[4] += contrib_13
-            linha_total[5] += dados[i]['PATRONAL'] + patronal_13
+            linha_total[3] += dados[i]['PATRONAL'] + patronal_13
+            linha_total[4] += remun_13
+            linha_total[5] += contrib_13
             linha_total[6] += dados[i]['BASE_CALC'] + remun_13
 
 
