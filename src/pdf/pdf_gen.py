@@ -1,12 +1,13 @@
 from datetime import datetime
-
+import locale
 from src.utils.paths import resource_path
 from src.styles import my_styles
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Image, Spacer
+from reportlab.lib.colors import lightgrey
 
-
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], competencias_dec_terc:list=['Jun', 'Dez']):
     """
@@ -73,10 +74,11 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
 
         # GERAR TABELA EXTRATO
         dados_extrato = [
-            ['Competência', 'Valor\nRemuneração', 'Valor\nContribuição', 'Valor\nRemuneração 13º', 'Valor\nContribuição 13º',  'TOTAL\nRemuneração + 13º', 'TOTAL\nContribuição']
+            ['Competência', 'Valor\nRemuneração', 'Valor\nContribuição', 'Valor\nRemuneração 13º', 'Valor\nContribuição 13º', 'Valor\nPatronal',  'TOTAL\nRemuneração + 13º']
         ]
 
         linha_total = ['TOTAL', 0, 0, 0, 0, 0, 0]
+        contador_13 = 0
         
         for i in range(len(dados)-4):
             i = str(i+1)
@@ -86,28 +88,42 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
                 continue
 
             if dados[i]['COMPETENCIA'] in competencias_dec_terc and chave_decimo_terceiro != None:
+                contador_13 += 1
                 remun_13 = (dados[chave_decimo_terceiro]['BASE_CALC'])/len([item for item in competencias_dec_terc if item not in exclude_competencias])
                 contrib_13 = (dados[chave_decimo_terceiro]['IPREV'])/len([item for item in competencias_dec_terc if item not in exclude_competencias])
+                patronal_13 = 0
+                if contador_13 == len(competencias_dec_terc):
+                    patronal_13 =(dados[chave_decimo_terceiro]['PATRONAL'])
             else:
-                remun_13, contrib_13 = 0, 0
+                remun_13, contrib_13, patronal_13 = 0, 0, 0
 
 
-            linha = [
+            '''linha = [
                 dados[i]['COMPETENCIA'],
                 f'{float(dados[i]['BASE_CALC']):,.2f}',
                 f'{float(dados[i]['IPREV']):,.2f}',
                 f'{float(remun_13):,.2f}',
                 f'{float(contrib_13):,.2f}',
+                f'{float(dados[i]['PATRONAL'] + patronal_13):,.2f}',
                 f'{float(dados[i]['BASE_CALC'] + remun_13):,.2f}',
-                f'{float(dados[i]['IPREV'] + contrib_13):,.2f}',
+            ]'''
+            linha = [
+                dados[i]['COMPETENCIA'],
+                locale.currency(dados[i]['BASE_CALC'], grouping=True, symbol=False),
+                locale.currency(dados[i]['IPREV'], grouping=True, symbol=False),
+                locale.currency(remun_13, grouping=True, symbol=False),
+                locale.currency(contrib_13, grouping=True, symbol=False),
+                locale.currency(dados[i]['PATRONAL'] + patronal_13, grouping=True, symbol=False),
+                locale.currency(dados[i]['BASE_CALC'] + remun_13, grouping=True, symbol=False),
             ]
 
             linha_total[1] += dados[i]['BASE_CALC']
             linha_total[2] += dados[i]['IPREV']
             linha_total[3] += remun_13
             linha_total[4] += contrib_13
-            linha_total[5] += dados[i]['BASE_CALC'] + remun_13
-            linha_total[6] += dados[i]['IPREV'] + contrib_13
+            linha_total[5] += dados[i]['PATRONAL'] + patronal_13
+            linha_total[6] += dados[i]['BASE_CALC'] + remun_13
+
 
             dados_extrato.append(linha)
 
@@ -116,13 +132,19 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
             val = linha_total[i]
             if type(val) == str: 
                 continue
-            linha_total[i] = f'{float(val):,.2f}'
+            #linha_total[i] = f'{float(val):,.2f}'
+            linha_total[i] = locale.currency(val, grouping=True, symbol=False)
 
         dados_extrato.append(linha_total)
             
         tabela_extrato = Table(dados_extrato, colWidths=[81, 81, 81, 81, 81, 81, 81])
-    
-        tabela_extrato.setStyle(TableStyle(my_styles.estiloTabelaExtrato))
+        estilo_tabela = TableStyle(my_styles.estiloTabelaExtrato)
+
+        # Adicionando estilo extra por cada linha da tabela
+        for i in range(len(dados_extrato)-2):
+            estilo_tabela.add('LINEBELOW', (0, i+1), (-1, i+1), 0.25, lightgrey)
+
+        tabela_extrato.setStyle(estilo_tabela)
 
         story.append(tabela_extrato)
         
@@ -131,7 +153,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
 
         pdf.build(story)
 
-        print("PDF criado com sucesso!")
+        print("PDF criado com sucesso!")    
         return True
     
     except Exception as e:
