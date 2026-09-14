@@ -452,7 +452,7 @@ class ExcelToPDFGUI:
 
         for chave, valor in dados.items(): print(f'{chave} > {valor}')
 
-        sucesso = gerarFolha(dados, pdf_path, competencias_nao_selecionadas, competencias_dec_terc)
+        sucesso = gerarFolha(dados, pdf_path, sum(1 for i in ESTRUTURA['CELULAS']), competencias_nao_selecionadas, competencias_dec_terc)
         print('SUCESSO:',sucesso)
 
         if sucesso:

@@ -49,7 +49,7 @@ estiloHeader = [
     ('SPAN', (1, 0), (-1, 0))
 ]
 
-estiloTabela1 = [
+estiloTabelaServidor = [
     # BORDAS
     ('GRID', (0, 0), (-1, -1), 1, colors.lightgrey),
 

@@ -2,6 +2,7 @@ from datetime import datetime
 import locale
 from src.utils.paths import resource_path
 from src.styles import my_styles
+from src.my_classes.spreadsheet import ESTRUTURA
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Image, Spacer
@@ -9,7 +10,7 @@ from reportlab.lib.colors import lightgrey
 
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
-def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC', 'Valores'], competencias_dec_terc:list=['Jun', 'Dez']):
+def gerarFolha(dados:dict, caminho_pdf, len_celulas:int, exclude_competencias:list=['BC', 'Valores'], competencias_dec_terc:list=['Jun', 'Dez']):
     """
     Gera o documento Guia da Previdência Própria com base na entrada de um dicionário de dados, na seguinte formatação:
     
@@ -66,7 +67,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC', 'Valore
         ]
 
         tabela_servidor = Table(dados_servidor, colWidths=[190, 190, 190])
-        tabela_servidor.setStyle(TableStyle(my_styles.estiloTabela1))
+        tabela_servidor.setStyle(TableStyle(my_styles.estiloTabelaServidor))
 
         story.append(tabela_servidor)
         story.append(Spacer(1, 0.5*cm))
@@ -80,7 +81,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC', 'Valore
         linha_total = ['TOTAL', 0, 0, 0, 0, 0, 0]
         contador_13 = 0
         
-        for i in range(len(dados)-4):
+        for i in range(len(dados)-(len_celulas + 1)):
             i = str(i+1)
 
             # PULAR PÁGINAS QUE EU EXCLUIR:
