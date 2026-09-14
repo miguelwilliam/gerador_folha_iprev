@@ -58,7 +58,7 @@ estiloTabelaServidor = [
 
     # SPAN
     ('SPAN', (0, 0), (-1, 0)),
-    ('SPAN', (0, -1), (-1, -1)),
+    ('SPAN', (0, -1), (-2, -1)),
 ]
 
 

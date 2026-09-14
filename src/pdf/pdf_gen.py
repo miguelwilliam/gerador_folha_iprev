@@ -63,7 +63,7 @@ def gerarFolha(dados:dict, caminho_pdf, len_celulas:int, exclude_competencias:li
         dados_servidor = [
             [Paragraph(f'Nome: {dados['NOME']}', my_styles.estiloParagrafo1), '', ''],
             [Paragraph(f'Fundo: {identificador}', my_styles.estiloParagrafo1), Paragraph(f'Admissão: {dados['ADMISSAO']}', my_styles.estiloParagrafo1), Paragraph(f'Data de cessão: {dados['CESSAO'].strftime("%d/%m/%Y")}', my_styles.estiloParagrafo1)],
-            [Paragraph(f'Orgão: {dados['ORGAO']}', my_styles.estiloParagrafo1), '', '']
+            [Paragraph(f'Orgão: {dados['ORGAO']}', my_styles.estiloParagrafo1), '', Paragraph(f'Ano referente: {dados['ANO']}', my_styles.estiloParagrafo1)]
         ]
 
         tabela_servidor = Table(dados_servidor, colWidths=[190, 190, 190])
@@ -81,7 +81,7 @@ def gerarFolha(dados:dict, caminho_pdf, len_celulas:int, exclude_competencias:li
         linha_total = ['TOTAL', 0, 0, 0, 0, 0, 0]
         contador_13 = 0
         
-        for i in range(len(dados)-(len_celulas + 1)):
+        for i in range(len(dados)-(len_celulas + 1)): # +1 porque o nome e a data de admissão são tiradas da mesma célula.
             i = str(i+1)
 
             # PULAR PÁGINAS QUE EU EXCLUIR:
