@@ -417,6 +417,7 @@ class ExcelToPDFGUI:
         meuExcel.carregar_paginas_automaticamente()
         df = meuExcel.carregar_pagina(sheet)
         dados = {}
+        df_null = df.isnull()
 
         for celula, pos in meuExcel.celulas.items():
             pos_pandas = Spreadsheet.excel_para_pandas(pos)
@@ -440,6 +441,12 @@ class ExcelToPDFGUI:
                 
                 # print(f'{dado}, ({linha-1}, {col}) > {df.iloc[pos_pandas[0], pos_pandas[1]]}')
                 # print(f'{dado} > {df.iloc[pos_pandas[0], pos_pandas[1]]}')
+
+                # Converter se o valor for NaN e formos fazer alterações
+                if df_null.iloc[pos_pandas[0], pos_pandas[1]] and dado in ESTRUTURA['CONVERTER_SE_NAN']:
+                    dados[str(col)][dado] = 0
+                    continue
+
                 dados[str(col)][dado] = df.iloc[pos_pandas[0], pos_pandas[1]]
 
 

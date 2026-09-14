@@ -13,10 +13,19 @@ ESTRUTURA = {
         'LINHAS': 
         {
             'COMPETENCIA': 5,
-            'BASE_CALC': 8,
-            'IPREV': 9,
-            'PATRONAL': 13
-        }
+            'BASE_CALC': 9,
+            'IPREV': 10,
+            'PATRONAL': 12,
+            'SUPLEMENTAR': 11,
+        },
+
+        'CONVERTER_SE_NAN':
+        [
+            'BASE_CALC',
+            'IPREV',
+            'PATRONAL',
+            'SUPLEMENTAR'
+        ]
 }
 
 class Spreadsheet():

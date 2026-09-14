@@ -9,7 +9,7 @@ from reportlab.lib.colors import lightgrey
 
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
-def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], competencias_dec_terc:list=['Jun', 'Dez']):
+def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC', 'Valores'], competencias_dec_terc:list=['Jun', 'Dez']):
     """
     Gera o documento Guia da Previdência Própria com base na entrada de um dicionário de dados, na seguinte formatação:
     
@@ -74,7 +74,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
 
         # GERAR TABELA EXTRATO
         dados_extrato = [
-            ['Competência', 'Valor\nRemuneração', 'Valor\nContribuição', 'Valor\nRemuneração 13º', 'Valor\nContribuição 13º',  'TOTAL\nRemuneração + 13º', 'Valor\nPatronal']
+            ['Competência', 'Salário\nContribuição', 'Valor\nContribuição', 'Valor\nRemuneração 13º', 'Valor\nContribuição 13º',  'TOTAL\nRemuneração + 13º', 'Valor\nPatronal']
         ]
 
         linha_total = ['TOTAL', 0, 0, 0, 0, 0, 0]
@@ -92,10 +92,12 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
                 remun_13 = (dados[chave_decimo_terceiro]['BASE_CALC'])/len([item for item in competencias_dec_terc if item not in exclude_competencias])
                 contrib_13 = (dados[chave_decimo_terceiro]['IPREV'])/len([item for item in competencias_dec_terc if item not in exclude_competencias])
                 patronal_13 = 0
+                suplementar_13 = 0
                 if contador_13 == len(competencias_dec_terc):
                     patronal_13 =(dados[chave_decimo_terceiro]['PATRONAL'])
+                    suplementar_13 =(dados[chave_decimo_terceiro]['SUPLEMENTAR'])
             else:
-                remun_13, contrib_13, patronal_13 = 0, 0, 0
+                remun_13, contrib_13, patronal_13, suplementar_13 = 0, 0, 0, 0
 
 
             linha = [
@@ -105,7 +107,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
                 locale.currency(remun_13, grouping=True, symbol=False),
                 locale.currency(contrib_13, grouping=True, symbol=False),
                 locale.currency(dados[i]['BASE_CALC'] + remun_13, grouping=True, symbol=False),
-                locale.currency(dados[i]['PATRONAL'] + patronal_13, grouping=True, symbol=False),
+                locale.currency(dados[i]['PATRONAL'] + dados[i]['SUPLEMENTAR'] + patronal_13 + suplementar_13, grouping=True, symbol=False),
             ]
 
             linha_total[1] += dados[i]['BASE_CALC']
@@ -113,7 +115,7 @@ def gerarFolha(dados:dict, caminho_pdf, exclude_competencias:list=['BC'], compet
             linha_total[3] += remun_13
             linha_total[4] += contrib_13
             linha_total[5] += dados[i]['BASE_CALC'] + remun_13
-            linha_total[6] += dados[i]['PATRONAL'] + patronal_13
+            linha_total[6] += dados[i]['PATRONAL'] + dados[i]['SUPLEMENTAR'] + patronal_13 + suplementar_13
 
 
             dados_extrato.append(linha)
