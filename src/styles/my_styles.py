@@ -84,3 +84,18 @@ estiloTabelaExtrato = [
     # BACKGROUND
     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e8f2fc'))
 ]
+
+estiloTabelaAssinatura = [
+    # FONTE
+    ('FONTSIZE', (0, 0), (-1, -1), estiloParagrafo1.fontSize),
+
+    # BORDAS
+    ('LINEBELOW', (0, 0), (-1, 0), 1, colors.HexColor("#000000")),
+
+    # ALINHAMENTO
+    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+
+    # PADDING
+    ("TOPPADDING", (0, 1), (-1, 1), 10),
+]

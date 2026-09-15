@@ -141,7 +141,31 @@ def gerarFolha(dados:dict, caminho_pdf, len_celulas:int, exclude_competencias:li
         tabela_extrato.setStyle(estilo_tabela)
 
         story.append(tabela_extrato)
-        
+
+        # SEÇÃO DE ASSINATURAS
+        dados_assinatura_1 = [
+            [' '],
+            ['Érica da Fonseca e Silva Dias'],
+            ['Diretora Financeira do IPREV']
+        ]
+        tabela_assinatura_1 = Table(dados_assinatura_1, colWidths=[150], rowHeights=[50,None, None])
+
+        dados_assinatura_2 = [
+            [' '],
+            ['Izabelle Albuquerque Costa'],
+            ['Presidente do IPREV']
+        ]
+        tabela_assinatura_2 = Table(dados_assinatura_2, colWidths=[150], rowHeights=[50,None, None])
+
+        estilo_assinatura = TableStyle(my_styles.estiloTabelaAssinatura)
+
+        tabela_assinatura_1.setStyle(estilo_assinatura)
+        tabela_assinatura_2.setStyle(estilo_assinatura)
+
+        container_tabela_assinaturas = Table([[tabela_assinatura_1, '', tabela_assinatura_2]], colWidths=[150,20,150], spaceBefore=20)
+
+
+        story.append(container_tabela_assinaturas)
 
         pdf = SimpleDocTemplate(str(caminho_pdf), pagesize=A4, rightMargin=72, leftMargin=72, topMargin=36)
 
